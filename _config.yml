@@ -1,4 +1,7 @@
-theme: minima
-title: CM-ThuyenVo's personal blog
-description: This is where I share cool stuff about CM AI tools
-author: CM-ThuyenVo
+remote_theme: pages-themes/cayman@v0.2.0
+plugins:
+- jekyll-remote-theme # add this line to the plugins list if you already have one
+title: Cambaliza McGee LLP - Support Tools
+description: This is where I share some small tools for our firm
+author: Thuyen Vo
+
