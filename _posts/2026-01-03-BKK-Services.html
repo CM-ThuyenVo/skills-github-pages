@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookkeeping Services Menu - Interactive Selection Tool</title>
+    <style>
+        :root {
+            /* Corporate brand colors from style.css */
+            --primary-color: #2c3984;
+            --secondary-color: #6b3376;
+            --primary-light: #4d5bb5;
+            --secondary-light: #8d4d96;
+            --accent-color: #3498db;
+            --bg-light: #f5f7fa;
+            --bg-card: #ffffff;
+            --border-color: #e0e0e0;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 30px 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .controls label {
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .controls select, .controls button {
+            padding: 10px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .controls button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+
+        .controls button:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .package-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .package-card {
+            flex: 1;
+            min-width: 280px;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            border: 3px solid transparent;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .package-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .package-card.selected {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, #f8f9ff, white);
+        }
+
+        .package-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .package-card .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-bottom: 15px;
+        }
+
+        .service-modules {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .module {
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .module:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .module-header {
+            background: linear-gradient(135deg, var(--secondary-color), var(--secondary-light));
+            color: white;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .module-header h3 {
+            font-size: 1.3em;
+        }
+
+        .module-header .toggle {
+            font-size: 1.5em;
+            transition: transform 0.3s ease;
+        }
+
+        .module-header .toggle.expanded {
+            transform: rotate(180deg);
+        }
+
+        .module-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .module-content.expanded {
+            max-height: none;
+            overflow: visible;
+        }
+
+        .service-item {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .service-item:last-child {
+            border-bottom: none;
+        }
+
+        .service-item:hover {
+            background-color: #f8f9ff;
+        }
+
+        .service-item.selected {
+            background-color: #e8f4fd;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .service-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .service-code {
+            display: inline-block;
+            padding: 5px 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .service-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--text-dark);
+            margin: 10px 0;
+        }
+
+        .service-details {
+            margin-top: 10px;
+        }
+
+        .scope-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+
+        .scope-list li {
+            padding: 5px 0 5px 20px;
+            position: relative;
+            color: var(--text-light);
+        }
+
+        .scope-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .scope-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: var(--bg-light);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .scope-item:hover {
+            background: #e8f4fd;
+        }
+
+        .scope-item.selected {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .scope-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .coa-info {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-left: 3px solid var(--accent-color);
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        .coa-label {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .selection-summary {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-top: 30px;
+            position: sticky;
+            top: 20px;
+        }
+
+        .selection-summary h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .selected-items {
+            list-style: none;
+            padding: 0;
+        }
+
+        .selected-items li {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: var(--bg-light);
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .remove-btn {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .remove-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-export-json {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-export-json:hover {
+            background-color: #229954;
+        }
+
+        .btn-export-excel {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-export-excel:hover {
+            background-color: var(--secondary-light);
+        }
+
+        .btn-clear {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background-color: #e67e22;
+        }
+
+        @media (max-width: 768px) {
+            .service-modules {
+                grid-template-columns: 1fr;
+            }
+
+            .package-selector {
+                flex-direction: column;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .frequency-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            background-color: var(--bg-light);
+            border-radius: 12px;
+            font-size: 0.85em;
+            color: var(--text-light);
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Bookkeeping Services Packages</h1>
+            <p>Interactive Service Selection Tool Ver. 1.0 - Designed for Cambaliza McGee LLP</p>
+            <p style="font-size: 0.95em; margin-top: 10px;">Select individual services or choose a pre-defined package to build your custom bookkeeping solution</p>
+        </header>
+
+        <div class="controls">
+            <label>Quick Filters:</label>
+            <select id="moduleFilter">
+                <option value="all">All Modules</option>
+                <option value="CB">Cash & Banking</option>
+                <option value="AR">Sales & Receivables</option>
+                <option value="AP">Purchases & Payables</option>
+                <option value="INV">Inventory & COGS</option>
+                <option value="FA">Fixed Assets</option>
+                <option value="PR">Payroll & Labor</option>
+                <option value="LE">Loans & Equity</option>
+                <option value="TX">Tax Compliance</option>
+                <option value="RPT">Reporting</option>
+                <option value="SP">Special Services</option>
+            </select>
+            <button onclick="expandAll()">Expand All</button>
+            <button onclick="collapseAll()">Collapse All</button>
+        </div>
+
+        <div class="package-selector">
+            <div class="package-card" onclick="selectPackage('essential')">
+                <div class="badge">Essential</div>
+                <h3>Essential Package</h3>
+                <p style="margin-top: 10px; color: var(--text-light);">Core accounting tasks for small businesses with simple operations. Includes basic bank reconciliation, invoicing, bill payment, and monthly financial statements.</p>
+            </div>
+            <div class="package-card" onclick="selectPackage('complete')">
+                <div class="badge">Complete</div>
+                <h3>Complete Package</h3>
+                <p style="margin-top: 10px; color: var(--text-light);">Comprehensive bookkeeping for growing businesses. Adds A/R & A/P management, fixed assets, payroll recording, and management reporting.</p>
+            </div>
+            <div class="package-card" onclick="selectPackage('premier')">
+                <div class="badge">Premier</div>
+                <h3>Premier Package</h3>
+                <p style="margin-top: 10px; color: var(--text-light);">Full-service accounting department. All Complete services plus inventory, advanced tax support, and advisory services.</p>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 350px; gap: 30px;">
+            <div>
+                <h2 style="margin-bottom: 20px; color: var(--text-dark);">Service Modules (Click to Expand)</h2>
+                <div class="service-modules" id="serviceModules">
+                    <!-- Services will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <div>
+                <div class="selection-summary">
+                    <h2>Your Selection</h2>
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-value" id="selectedCount">0</div>
+                            <div class="stat-label">Services</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="scopeCount">0</div>
+                            <div class="stat-label">Scopes</div>
+                        </div>
+                    </div>
+                    <ul class="selected-items" id="selectedItems">
+                        <li style="background: none; color: var(--text-light); padding: 20px 10px;">
+                            No services selected yet. Click on services below or select a package above.
+                        </li>
+                    </ul>
+                    <div class="action-buttons">
+                        <button class="btn-export-json" onclick="exportJSON()">📄 JSON</button>
+                        <button class="btn-export-excel" onclick="exportExcel()">📊 Excel</button>
+                        <button class="btn-clear" onclick="clearSelection()">🗑️ Clear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SheetJS library for Excel export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+    <script>
+        // ============================================================
+        // EMBEDDED DATA - Data is embedded directly in HTML
+        // ============================================================
+        const servicesData = {
+  "metadata": {
+    "title": "Bookkeeping Services Menu & Scope of Work",
+    "description": "Comprehensive bookkeeping service catalog for Cambaliza McGee LLP -  CPA firm with Chart of Accounts mapping",
+    "version": "1.1.0",
+    "last_updated": "2025-11-23",
+    "standard": "US GAAP"
+  },
+  "service_modules": [
+    {
+      "id": "CB",
+      "name": "Cash & Banking",
+      "description": "Ensure all cash inflows and outflows are accurately recorded and reconciled with bank statements",
+      "coa_range": "1000-1999 (Assets - Cash/Bank Accounts)",
+      "services": [
+        {
+          "code": "CB-01",
+          "name": "Monthly Bank Reconciliation",
+          "scope_of_work": [
+            "Reconcile book balance with bank statement at month-end",
+            "Investigate and resolve discrepancies (uncleared checks, deposits in transit)"
+          ],
+          "coa_accounts": [
+            "1000-1099 (Cash/Checking)"
+          ],
+          "frequency": "Monthly",
+          "deliverable": "Bank Reconciliation Report"
+        },
+        {
+          "code": "CB-02",
+          "name": "Credit Card Reconciliation",
+          "scope_of_work": [
+            "Reconcile credit card statements",
+            "Ensure all charges including finance charges and late fees are recorded"
+          ],
+          "coa_accounts": [
+            "2000-2099 (Credit Cards Payable)"
+          ],
+          "frequency": "Monthly",
+          "deliverable": "Credit Card Reconciliation Report"
+        },
+        {
+          "code": "CB-03",
+          "name": "PayPal / Stripe / Merchant Feed",
+          "scope_of_work": [
+            "Sync and categorize transactions from payment gateways (PayPal, Stripe, Square)",
+            "Separate merchant fees from gross revenue"
+          ],
+          "coa_accounts": [
+            "10xx (Clearing Accounts)",
+            "6xxx (Merchant Fees)"
+          ],
+          "frequency": "Monthly",
+          "deliverable": "Merchant Account Reconciliation"
+        },
+        {
+          "code": "CB-04",
+          "name": "Petty Cash Management",
+          "scope_of_work": [
+            "Maintain petty cash log",
+            "Reconcile actual cash on hand periodically"
+          ],
+          "coa_accounts": [
+            "10xx (Petty Cash)"
+          ],
+          "frequency": "Monthly",
+          "deliverable": "Petty Cash Report"
+        },
+        {
+          "code": "CB-05",
+          "name": "Cash Flow Monitoring",
+          "scope_of_work": [
+            "Weekly cash flow reporting",
+            "Short-term cash shortage forecasting and alerts"
+          ],
+          "coa_accounts": [
+            "N/A (Reporting)"
+          ],
+          "frequency": "Weekly",
+          "deliverable": "Cash Flow Summary"
+        }
+      ]
+    },
+    {
+      "id": "AR",
+      "name": "Sales & Accounts Receivable",
+      "description": "Manage revenue cycle from invoicing to payment receipt",
+      "coa_range": "4000-4999 (Revenue), 1100 (Accounts Receivable)",
+      "services": [
+        {
+          "code": "AR-01",
+          "name": "Invoicing Creation",
+          "scope_of_work": [
+            "Create and send invoices to customers based on sales/service information",
+            "Attach supporting documents as needed"
+          ],
+          "coa_accounts": [
+            "4000-4999 (Revenue)",
+            "1100 (Accounts Receivable)"
+          ],
+          "frequency": "As needed",
+          "deliverable": "Customer Invoices"
+        },
+        {
+          "code": "AR-02",
+          "name": "Payment Recording (Receive Payments)",
+          "scope_of_work": [
+            "Record customer payments in the system",
+            "Process partial payments"
+          ],
+          "coa_accounts": [
+            "1100 (Accounts Receivable)",
+            "1200 (Undeposited Funds)"
+          ],
+          "frequency": "Daily/Weekly",
+          "deliverable": "Payment Receipt Records"
+        },
+        {
+          "code": "AR-03",
+          "name": "Deposit Matching",
+          "scope_of_work": [
+            "Match undeposited funds with actual bank deposits"
+          ],
+          "coa_accounts": [
+            "10xx (Checking)"
+          ],
+          "frequency": "Weekly",
+          "deliverable": "Bank Deposit Report"
+        },
+        {
+          "code": "AR-04",
+          "name": "A/R Aging & Collection Support",
+          "scope_of_work": [
+            "Send periodic statements to customers",
+            "Track and follow up on overdue accounts"
+          ],
+          "coa_accounts": [
+            "1100 (Accounts Receivable)"
+          ],
+          "frequency": "Monthly",
+          "deliverable": "A/R Aging Report"
+        },
+        {
+          "code": "AR-05",
+          "name": "Bad Debt Processing",
+          "scope_of_work": [
+            "Identify uncollectible accounts",
+            "Process write-offs per approval"
+          ],
+          "coa_accounts": [
+            "6xxx (Bad Debt Expense)"
+          ],
+          "frequency": "As needed",
+          "deliverable": "Write-off Documentation"
+        }
+      ]
+    },
+    {
+      "id": "AP",
+      "name": "Purchases & Accounts Payable",
+      "description": "Manage input costs and payment obligations",
+      "coa_range": "6000-8999 (Expenses), 2000-2999 (Liabilities)",
+      "services": [
+        {
+          "code": "AP-01",
+          "name": "Bill Entry & Coding",
+          "scope_of_work": [
+            "Enter vendor bills",
+            "Classify expenses to correct GL accounts (Office Supplies, Rent, Utilities, etc.)"
+          ],
+          "coa_accounts": [
+            "2000 (Accounts Payable)",
+            "6xxx-8xxx (Expenses)"
+          ],
+          "frequency": "Weekly",
+          "deliverable": "Bill Register"
+        },
+        {
+          "code": "AP-02",
+          "name": "Bill Payment Execution",
+          "scope_of_work": [
+            "Prepare payment schedule for approval",
+            "Execute payments via Check/ACH/Bill.com"
+          ],
+          "coa_accounts": [
+            "2000 (Accounts Payable)",
+            "10xx (Cash)"
+          ],
+          "frequency": "Weekly",
+          "deliverable": "Payment Confirmation"
+        },
+        {
+          "code": "AP-03",
+          "name": "Vendor Management",
+          "scope_of_work": [
+            "Update vendor information (W-9, contact info)",
+            "Reconcile vendor statements"
+          ],
+          "coa_accounts": [
+            "N/A"
+          ],
+          "frequency": "Quarterly",
+          "deliverable": "Vendor Master File"
+        },
+        {
+          "code": "AP-04",
+          "name": "Expense Reimbursement",
+          "scope_of_work": [
+            "Process employee expense reports",
+            "Reimburse out-of-pocket expenses"
+          ],
+          "coa_accounts": [
+            "6xxx (Travel",
+            "Meals",
+            "etc.)"
+          ],
+          "frequency": "Bi-weekly",
+          "deliverable": "Reimbursement Records"
+        },
+        {
+          "code": "AP-05",
+          "name": "1099 Vendor Filing",
+          "scope_of_work": [
+            "Track payments to independent contractors ($600+ threshold)",
+            "Prepare and file form 1099-NEC/1099-MISC"
+          ],
+          "coa_accounts": [
+            "N/A (Compliance)"
+          ],
+          "frequency": "Annual",
+          "deliverable": "1099 Forms"
+        }
+      ]
+    },
+    {
+      "id": "INV",
+      "name": "Inventory & COGS",
+      "description": "Track inventory value and cost of goods sold",
+      "coa_range": "1200-1300 (Inventory Assets), 5000-5999 (COGS)",
+      "services": [
+        {
+          "code": "INV-01",
+          "name": "Inventory Tracking",
+          "scope_of_work": [
+            "Record inventory receipts and issues (quantity adjustments)",
+            "Periodic inventory valuation adjustments"
+          ],
+          "coa_accounts": [
+            "1200-1300 (Inventory Asset)"
+          ],
+          "frequency": "Monthly",
+          "deliverable": "Inventory Movement Report"
+        },
+        {
+          "code": "INV-02",
+          "name": "COGS Recognition",
+          "scope_of_work": [
+            "Calculate and record cost of goods sold corresponding to revenue"
+          ],
+          "coa_accounts": [
+            "5000-5999 (Cost of Goods Sold)"
+          ],
+          "frequency": "Monthly",
+          "deliverable": "COGS Calculation"
+        },
+        {
+          "code": "INV-03",
+          "name": "Inventory Count Reconciliation",
+          "scope_of_work": [
+            "Reconcile physical inventory count with book records",
+            "Adjust for inventory shrinkage"
+          ],
+          "coa_accounts": [
+            "5xxx (COGS - Adjustments)"
+          ],
+          "frequency": "Quarterly/Annual",
+          "deliverable": "Physical Inventory Report"
+        }
+      ]
+    },
+    {
+      "id": "FA",
+      "name": "Fixed Assets",
+      "description": "Manage long-term assets and depreciation",
+      "coa_range": "1500-1700 (Fixed Assets)",
+      "services": [
+        {
+          "code": "FA-01",
+          "name": "Asset Capitalization",
+          "scope_of_work": [
+            "Record new fixed asset acquisitions (above capitalization threshold)",
+            "Classify assets (Furniture, Equipment, Vehicles, etc.)"
+          ],
+          "coa_accounts": [
+            "1500-1700 (Fixed Assets)"
+          ],
+          "frequency": "As needed",
+          "deliverable": "Fixed Asset Register"
+        },
+        {
+          "code": "FA-02",
+          "name": "Depreciation Schedule",
+          "scope_of_work": [
+            "Run monthly/annual depreciation calculations",
+            "Record depreciation expense and accumulated depreciation"
+          ],
+          "coa_accounts": [
+            "17xx (Accumulated Depreciation)",
+            "6xxx (Depreciation Expense)"
+          ],
+          "frequency": "Monthly",
+          "deliverable": "Depreciation Schedule"
+        },
+        {
+          "code": "FA-03",
+          "name": "Asset Disposal",
+          "scope_of_work": [
+            "Record asset disposals and sales",
+            "Calculate gain/loss on disposal"
+          ],
+          "coa_accounts": [
+            "8xxx (Gain/Loss on Disposal)"
+          ],
+          "frequency": "As needed",
+          "deliverable": "Disposal Documentation"
+        }
+      ]
+    },
+    {
+      "id": "PR",
+      "name": "Payroll & Labor",
+      "description": "Accurately record payroll expenses (payroll service typically outsourced)",
+      "coa_range": "6xxx (Wages/Salaries), 2xxx (Payroll Liabilities)",
+      "services": [
+        {
+          "code": "PR-01",
+          "name": "Payroll Journal Entry",
+          "scope_of_work": [
+            "Import or manually enter payroll summary entries per period",
+            "Record gross pay, taxes, and net pay"
+          ],
+          "coa_accounts": [
+            "6xxx (Wages/Salaries)",
+            "2xxx (Payroll Liabilities)"
+          ],
+          "frequency": "Bi-weekly/Semi-monthly",
+          "deliverable": "Payroll Journal Entry"
+        },
+        {
+          "code": "PR-02",
+          "name": "Payroll Tax Reconciliation",
+          "scope_of_work": [
+            "Ensure payroll taxes (Federal, State, Local) are paid on time",
+            "Reconcile payroll tax liability accounts"
+          ],
+          "coa_accounts": [
+            "2xxx (Payroll Tax Payable)"
+          ],
+          "frequency": "Quarterly",
+          "deliverable": "Payroll Tax Reconciliation"
+        },
+        {
+          "code": "PR-03",
+          "name": "Benefits Administration",
+          "scope_of_work": [
+            "Record insurance, 401k, HSA deductions",
+            "Reconcile insurance bills with payroll data"
+          ],
+          "coa_accounts": [
+            "6xxx (Employee Benefits)"
+          ],
+          "frequency": "Monthly",
+          "deliverable": "Benefits Reconciliation"
+        }
+      ]
+    },
+    {
+      "id": "LE",
+      "name": "Loans & Equity",
+      "description": "Track capital sources and long-term debt obligations",
+      "coa_range": "2xxx (Loans Payable), 3000-3999 (Equity)",
+      "services": [
+        {
+          "code": "LE-01",
+          "name": "Loan Amortization",
+          "scope_of_work": [
+            "Split monthly loan payments into principal and interest",
+            "Reconcile loan balance with lender statements"
+          ],
+          "coa_accounts": [
+            "2xxx (Loans Payable)",
+            "6xxx (Interest Expense)"
+          ],
+          "frequency": "Monthly",
+          "deliverable": "Loan Amortization Schedule"
+        },
+        {
+          "code": "LE-02",
+          "name": "Owner Draws/Contributions",
+          "scope_of_work": [
+            "Record additional capital contributions or owner withdrawals",
+            "Properly classify (Partner Distribution vs Salary)"
+          ],
+          "coa_accounts": [
+            "3000-3999 (Equity)"
+          ],
+          "frequency": "As needed",
+          "deliverable": "Equity Transaction Log"
+        },
+        {
+          "code": "LE-03",
+          "name": "Inter-company Transactions",
+          "scope_of_work": [
+            "Reconcile transactions between parent-subsidiary or related entities"
+          ],
+          "coa_accounts": [
+            "1xxx/2xxx (Due to/from)"
+          ],
+          "frequency": "Monthly",
+          "deliverable": "Inter-company Reconciliation"
+        }
+      ]
+    },
+    {
+      "id": "TX",
+      "name": "Tax Compliance",
+      "description": "Support tax reporting data preparation",
+      "coa_range": "6000-8999 (Expenses), 2000-2999 (Liabilities)",
+      "services": [
+        {
+          "code": "TX-01",
+          "name": "Sales Tax Filing",
+          "scope_of_work": [
+            "Aggregate taxable revenue by state/county",
+            "Prepare and file sales tax returns by period (Monthly/Quarterly)"
+          ],
+          "coa_accounts": [
+            "2xxx (Sales Tax Payable)"
+          ],
+          "frequency": "Monthly/Quarterly",
+          "deliverable": "Sales Tax Return"
+        },
+        {
+          "code": "TX-02",
+          "name": "Estimated Tax Support",
+          "scope_of_work": [
+            "Provide estimated profit figures for CPA to calculate estimated tax payments"
+          ],
+          "coa_accounts": [
+            "N/A"
+          ],
+          "frequency": "Quarterly",
+          "deliverable": "Vendor Master File"
+        },
+        {
+          "code": "TX-03",
+          "name": "Year-End Tax Package",
+          "scope_of_work": [
+            "Prepare year-end tax package for CPA (Trial Balance, General Ledger, Asset List)",
+            "Address 'Ask My Accountant' questions"
+          ],
+          "coa_accounts": [
+            "N/A"
+          ],
+          "frequency": "Quarterly",
+          "deliverable": "Vendor Master File"
+        }
+      ]
+    },
+    {
+      "id": "RPT",
+      "name": "Month-End & Financial Reporting",
+      "description": "Provide accurate periodic financial picture",
+      "coa_range": "All accounts",
+      "services": [
+        {
+          "code": "RPT-01",
+          "name": "Month-End Closing",
+          "scope_of_work": [
+            "Review all sub-ledgers and General Ledger",
+            "Reclassify misposted entries",
+            "Set closing date lock"
+          ],
+          "coa_accounts": [
+            "All accounts"
+          ],
+          "frequency": "Monthly",
+          "deliverable": "Closed Books"
+        },
+        {
+          "code": "RPT-02",
+          "name": "Standard Financial Statements",
+          "scope_of_work": [
+            "Balance Sheet (Statement of Financial Position)",
+            "Profit & Loss (Income Statement)",
+            "Statement of Cash Flows"
+          ],
+          "coa_accounts": [
+            "All accounts"
+          ],
+          "frequency": "Monthly",
+          "deliverable": "Closed Books"
+        },
+        {
+          "code": "RPT-03",
+          "name": "Management Reporting",
+          "scope_of_work": [
+            "Budget vs. Actual comparison",
+            "KPI Dashboard (Profit margin, ROI, etc.)",
+            "Detailed reports by Project/Department (Class tracking)"
+          ],
+          "coa_accounts": [
+            "All accounts"
+          ],
+          "frequency": "Monthly",
+          "deliverable": "Closed Books"
+        }
+      ]
+    },
+    {
+      "id": "SP",
+      "name": "Special Services",
+      "description": "Non-recurring services",
+      "coa_range": "6000-8999 (Expenses), 2000-2999 (Liabilities)",
+      "services": [
+        {
+          "code": "SP-01",
+          "name": "Onboarding",
+          "scope_of_work": [
+            "Clean up books from prior periods with errors or missing entries",
+            "Reconcile all accounts from beginning of year"
+          ],
+          "coa_accounts": [
+            "All accounts"
+          ],
+          "frequency": "Monthly",
+          "deliverable": "Closed Books"
+        },
+        {
+          "code": "SP-02",
+          "name": "Software Setup & Integration",
+          "scope_of_work": [
+            "Set up new QuickBooks/Xero (Chart of Accounts, Settings)",
+            "Integrate apps (POS, Time tracking, Expense management)"
+          ],
+          "coa_accounts": [
+            "N/A"
+          ],
+          "frequency": "Quarterly",
+          "deliverable": "Vendor Master File"
+        },
+        {
+          "code": "SP-03",
+          "name": "Audit Support",
+          "scope_of_work": [
+            "Provide supporting documents and books during tax audit or financial audit"
+          ],
+          "coa_accounts": [
+            "N/A"
+          ],
+          "frequency": "Quarterly",
+          "deliverable": "Vendor Master File"
+        },
+        {
+          "code": "SP-04",
+          "name": "Cleanup / Catch-up",
+          "scope_of_work": [
+            "Clean up books from prior periods with errors or missing entries",
+            "Reconcile all accounts from beginning of year"
+          ],
+          "coa_accounts": [
+            "All accounts"
+          ],
+          "frequency": "Monthly",
+          "deliverable": "Closed Books"
+        }
+      ]
+    }
+  ],
+  "service_packages": [
+    {
+      "id": "Focus on core accounting tasks including revenue and expense classification, bank reconciliation, and basic monthly financial reporting. This package helps maintain clean books and minimum accounting compliance.",
+      "name": "Small businesses with simple operations",
+      "description": "CB-01, CB-02, CB-05, AR-01, AR-02, AR-03, AP-01, AP-02, RPT-01, RPT-02",
+      "included_services": [
+        "essential"
+      ],
+      "ideal_for": "Essential Package"
+    },
+    {
+      "id": "Includes all Essential package services plus accounts receivable/payable management, fixed asset tracking and depreciation, management reporting, and year-end support. This package ensures accurate, complete accrual-based accounting.",
+      "name": "Growing businesses requiring comprehensive bookkeeping",
+      "description": "CB-01, CB-02, CB-03, CB-04, CB-05, AR-01, AR-02, AR-03, AR-04, AR-05, AP-01, AP-02, AP-03, AP-04, FA-01, FA-02, FA-03, PR-01, PR-02, TX-03, RPT-01, RPT-02, RPT-03",
+      "included_services": [
+        "complete"
+      ],
+      "ideal_for": "Complete Package"
+    },
+    {
+      "id": "Comprehensive all-inclusive service including all Complete package items, plus advanced tax support (Sales Tax, Income Tax), digital document management, and premium advisory services (periodic financial analysis meetings, budget forecasting). This package is suitable for businesses requiring full-service accounting as an outsourced accounting department.",
+      "name": "Established businesses requiring full-service accounting department",
+      "description": "CB-01, CB-02, CB-03, CB-04, CB-05, AR-01, AR-02, AR-03, AR-04, AR-05, AP-01, AP-02, AP-03, AP-04, AP-05, INV-01, INV-02, INV-03, FA-01, FA-02, FA-03, PR-01, PR-02, PR-03, LE-01, LE-02, LE-03, TX-01, TX-02, TX-03, RPT-01, RPT-02, RPT-03, SP-02, CB-06",
+      "included_services": [
+        "premier"
+      ],
+      "ideal_for": "Premier Package"
+    }
+  ]
+};
+        let selectedServices = new Map(); // Map of serviceCode -> Set of selected scope indices
+
+        // Note: Data is now embedded above. No need to load from external files.
+        // To update data, edit the servicesData object above or sync from presets/bookkeeping-services-data.json
+
+        // Package definitions
+        const packages = {
+            essential: ["CB-01", "CB-02", "CB-05", "AR-01", "AR-02", "AR-03", "AP-01", "AP-02", "RPT-01", "RPT-02"],
+            complete: ["CB-01", "CB-02", "CB-03", "CB-04", "CB-05", "AR-01", "AR-02", "AR-03", "AR-04", "AR-05", 
+                      "AP-01", "AP-02", "AP-03", "AP-04", "FA-01", "FA-02", "FA-03", "PR-01", "PR-02", "TX-03", 
+                      "RPT-01", "RPT-02", "RPT-03"],
+            premier: ["CB-01", "CB-02", "CB-03", "CB-04", "CB-05", "AR-01", "AR-02", "AR-03", "AR-04", "AR-05", 
+                     "AP-01", "AP-02", "AP-03", "AP-04", "AP-05", "INV-01", "INV-02", "INV-03", 
+                     "FA-01", "FA-02", "FA-03", "PR-01", "PR-02", "PR-03", "LE-01", "LE-02", "LE-03", 
+                     "TX-01", "TX-02", "TX-03", "RPT-01", "RPT-02", "RPT-03", "SP-02"]
+        };
+
+        // ============================================================
+        // Initialize - Data is embedded, no loading needed
+        // ============================================================
+        // Data is now embedded directly in the HTML file.
+        // Simply render the services on page load.
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✓ Using embedded data - no external loading required');
+            renderServices();
+        });
+
+        function renderServices() {
+            const container = document.getElementById('serviceModules');
+            container.innerHTML = '';
+
+            servicesData.service_modules.forEach(module => {
+                const moduleDiv = document.createElement('div');
+                moduleDiv.className = 'module';
+                moduleDiv.dataset.moduleId = module.id;
+
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'module-header';
+                headerDiv.onclick = () => toggleModule(module.id);
+                headerDiv.innerHTML = `
+                    <div>
+                        <h3>${module.name}</h3>
+                    </div>
+                    <span class="toggle">▼</span>
+                `;
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'module-content';
+                contentDiv.id = `module-${module.id}`;
+
+                module.services.forEach(service => {
+                    const serviceDiv = document.createElement('div');
+                    serviceDiv.className = 'service-item';
+                    serviceDiv.dataset.serviceCode = service.code;
+                    
+                    // Build scope items with checkboxes
+                    const scopeItems = service.scope_of_work.map((scope, index) => `
+                        <div class="scope-item" onclick="toggleScope('${service.code}', ${index}, event)">
+                            <input type="checkbox" 
+                                   id="scope-${service.code}-${index}"
+                                   onchange="event.stopPropagation(); toggleScope('${service.code}', ${index}, event)"
+                                   ${selectedServices.has(service.code) && selectedServices.get(service.code).has(index) ? 'checked' : ''}>
+                            <label for="scope-${service.code}-${index}" style="cursor: pointer; flex: 1;">${scope}</label>
+                        </div>
+                    `).join('');
+                    
+                    serviceDiv.innerHTML = `
+                        <div class="service-header">
+                            <div class="checkbox-wrapper">
+                                <span class="service-code">${service.code}</span>
+                            </div>
+                            <span class="frequency-badge">${service.frequency}</span>
+                        </div>
+                        <div class="service-name">${service.name}</div>
+                        <div class="service-details">
+                            <div style="margin: 10px 0;">
+                                <strong>Scope of Work:</strong>
+                            </div>
+                            ${scopeItems}
+                            <div class="coa-info">
+                                <span class="coa-label">COA:</span> ${service.coa_accounts.join(', ')}
+                            </div>
+                            <div style="margin-top: 8px; font-size: 0.85em; color: var(--text-light);">
+                                <strong>Deliverable:</strong> ${service.deliverable}
+                            </div>
+                        </div>
+                    `;
+
+                    // Check if any scopes are selected for this service
+                    if (selectedServices.has(service.code) && selectedServices.get(service.code).size > 0) {
+                        serviceDiv.classList.add('selected');
+                    }
+
+                    contentDiv.appendChild(serviceDiv);
+                });
+
+                moduleDiv.appendChild(headerDiv);
+                moduleDiv.appendChild(contentDiv);
+                container.appendChild(moduleDiv);
+            });
+
+            updateSelection();
+        }
+
+        function toggleModule(moduleId) {
+            const content = document.getElementById(`module-${moduleId}`);
+            const toggle = content.previousElementSibling.querySelector('.toggle');
+            
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                toggle.classList.remove('expanded');
+            } else {
+                content.classList.add('expanded');
+                toggle.classList.add('expanded');
+            }
+        }
+
+        function expandAll() {
+            document.querySelectorAll('.module-content').forEach(content => {
+                content.classList.add('expanded');
+                content.previousElementSibling.querySelector('.toggle').classList.add('expanded');
+            });
+        }
+
+        function collapseAll() {
+            document.querySelectorAll('.module-content').forEach(content => {
+                content.classList.remove('expanded');
+                content.previousElementSibling.querySelector('.toggle').classList.remove('expanded');
+            });
+        }
+
+        function toggleScope(serviceCode, scopeIndex, event) {
+            event.stopPropagation();
+            
+            if (!selectedServices.has(serviceCode)) {
+                selectedServices.set(serviceCode, new Set());
+            }
+            
+            const scopeSet = selectedServices.get(serviceCode);
+            
+            if (scopeSet.has(scopeIndex)) {
+                scopeSet.delete(scopeIndex);
+                if (scopeSet.size === 0) {
+                    selectedServices.delete(serviceCode);
+                }
+            } else {
+                scopeSet.add(scopeIndex);
+            }
+            
+            updateSelection();
+            updateServiceVisualState(serviceCode);
+        }
+
+        function updateServiceVisualState(serviceCode) {
+            const serviceItem = document.querySelector(`[data-service-code="${serviceCode}"]`);
+            if (!serviceItem) return;
+            
+            if (selectedServices.has(serviceCode) && selectedServices.get(serviceCode).size > 0) {
+                serviceItem.classList.add('selected');
+            } else {
+                serviceItem.classList.remove('selected');
+            }
+            
+            // Update checkboxes
+            const scopeSet = selectedServices.get(serviceCode) || new Set();
+            serviceItem.querySelectorAll('.scope-item input[type="checkbox"]').forEach((checkbox, index) => {
+                checkbox.checked = scopeSet.has(index);
+                const scopeItem = checkbox.closest('.scope-item');
+                if (scopeSet.has(index)) {
+                    scopeItem.classList.add('selected');
+                } else {
+                    scopeItem.classList.remove('selected');
+                }
+            });
+        }
+
+        function selectPackage(packageType) {
+            // Clear current selection
+            selectedServices.clear();
+            
+            // Add package services with all scopes selected
+            packages[packageType].forEach(code => {
+                const service = findServiceByCode(code);
+                if (service) {
+                    const scopeSet = new Set();
+                    service.scope_of_work.forEach((_, index) => {
+                        scopeSet.add(index);
+                    });
+                    selectedServices.set(code, scopeSet);
+                }
+            });
+
+            // Update UI
+            document.querySelectorAll('.package-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            renderServices();
+        }
+
+        function findServiceByCode(code) {
+            for (let module of servicesData.service_modules) {
+                const service = module.services.find(s => s.code === code);
+                if (service) return service;
+            }
+            return null;
+        }
+
+        function updateSelection() {
+            const selectedList = document.getElementById('selectedItems');
+            const selectedCount = document.getElementById('selectedCount');
+            const scopeCount = document.getElementById('scopeCount');
+            
+            selectedList.innerHTML = '';
+            
+            let totalScopes = 0;
+            selectedServices.forEach(scopeSet => {
+                totalScopes += scopeSet.size;
+            });
+            
+            if (selectedServices.size === 0) {
+                selectedList.innerHTML = `
+                    <li style="background: none; color: var(--text-light); padding: 20px 10px;">
+                        No services selected yet. Click on scopes below or select a package above.
+                    </li>
+                `;
+                selectedCount.textContent = '0';
+                scopeCount.textContent = '0';
+                return;
+            }
+
+            const moduleSet = new Set();
+            const servicesByModule = {};
+
+            servicesData.service_modules.forEach(module => {
+                module.services.forEach(service => {
+                    if (selectedServices.has(service.code)) {
+                        moduleSet.add(module.id);
+                        if (!servicesByModule[module.id]) {
+                            servicesByModule[module.id] = {
+                                name: module.name,
+                                services: []
+                            };
+                        }
+                        const scopeSet = selectedServices.get(service.code);
+                        const selectedScopes = Array.from(scopeSet).map(i => service.scope_of_work[i]);
+                        servicesByModule[module.id].services.push({
+                            ...service,
+                            selectedScopes: selectedScopes
+                        });
+                    }
+                });
+            });
+
+            Object.keys(servicesByModule).forEach(moduleId => {
+                const module = servicesByModule[moduleId];
+                const moduleHeader = document.createElement('li');
+                moduleHeader.innerHTML = `<strong style="color: var(--primary-color);">${module.name}</strong>`;
+                moduleHeader.style.background = 'var(--bg-light)';
+                moduleHeader.style.fontWeight = 'bold';
+                selectedList.appendChild(moduleHeader);
+
+                module.services.forEach(service => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <div style="flex: 1;">
+                            <strong>${service.code}: ${service.name}</strong>
+                            <div style="font-size: 0.85em; margin-top: 5px; color: var(--text-light);">
+                                ${service.selectedScopes.length} scope(s) selected
+                            </div>
+                        </div>
+                        <button class="remove-btn" onclick="removeService('${service.code}')">×</button>
+                    `;
+                    selectedList.appendChild(li);
+                });
+            });
+
+            selectedCount.textContent = selectedServices.size;
+            scopeCount.textContent = totalScopes;
+        }
+
+        function removeService(serviceCode) {
+            selectedServices.delete(serviceCode);
+            renderServices();
+        }
+
+        function clearSelection() {
+            if (confirm('Are you sure you want to clear all selections?')) {
+                selectedServices.clear();
+                document.querySelectorAll('.package-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                renderServices();
+            }
+        }
+
+        function exportJSON() {
+            if (selectedServices.size === 0) {
+                alert('Please select at least one service to export.');
+                return;
+            }
+
+            const exportData = {
+                export_date: new Date().toISOString(),
+                total_services: selectedServices.size,
+                selected_services: []
+            };
+
+            servicesData.service_modules.forEach(module => {
+                module.services.forEach(service => {
+                    if (selectedServices.has(service.code)) {
+                        const scopeSet = selectedServices.get(service.code);
+                        const selectedScopes = Array.from(scopeSet).map(i => service.scope_of_work[i]);
+                        
+                        exportData.selected_services.push({
+                            module: module.name,
+                            code: service.code,
+                            name: service.name,
+                            selected_scopes: selectedScopes,
+                            coa_accounts: service.coa_accounts,
+                            frequency: service.frequency,
+                            deliverable: service.deliverable
+                        });
+                    }
+                });
+            });
+
+            // Create downloadable JSON
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `bookkeeping-services-selection-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+
+            alert(`Exported ${selectedServices.size} services successfully!`);
+        }
+
+        function exportExcel() {
+            if (selectedServices.size === 0) {
+                alert('Please select at least one service to export.');
+                return;
+            }
+
+            // Prepare data for Excel export
+            const worksheetData = [];
+            
+            // Add headers
+            worksheetData.push([
+                'Module',
+                'Service Code',
+                'Service Name',
+                'Scope of Work',
+                'COA Accounts',
+                'Frequency',
+                'Deliverable'
+            ]);
+
+            // Add selected services
+            servicesData.service_modules.forEach(module => {
+                module.services.forEach(service => {
+                    if (selectedServices.has(service.code)) {
+                        const scopeSet = selectedServices.get(service.code);
+                        const selectedScopes = Array.from(scopeSet).map(i => service.scope_of_work[i]);
+                        
+                        worksheetData.push([
+                            module.name,
+                            service.code,
+                            service.name,
+                            selectedScopes.join('\n'),
+                            service.coa_accounts.join(', '),
+                            service.frequency,
+                            service.deliverable
+                        ]);
+                    }
+                });
+            });
+
+            // Create workbook and worksheet
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(worksheetData);
+
+            // Set column widths
+            ws['!cols'] = [
+                { wch: 25 },  // Module
+                { wch: 12 },  // Service Code
+                { wch: 40 },  // Service Name
+                { wch: 60 },  // Scope of Work
+                { wch: 30 },  // COA Accounts
+                { wch: 15 },  // Frequency
+                { wch: 35 }   // Deliverable
+            ];
+
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Selected Services');
+
+            // Generate filename with date
+            const filename = `bookkeeping-services-selection-${new Date().toISOString().split('T')[0]}.xlsx`;
+
+            // Save file
+            XLSX.writeFile(wb, filename);
+
+            alert(`Exported ${selectedServices.size} services to Excel successfully!`);
+        }
+
+        // Filter functionality
+        document.getElementById('moduleFilter').addEventListener('change', function(e) {
+            const filterValue = e.target.value;
+            
+            document.querySelectorAll('.module').forEach(module => {
+                if (filterValue === 'all' || module.dataset.moduleId === filterValue) {
+                    module.style.display = 'block';
+                } else {
+                    module.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
